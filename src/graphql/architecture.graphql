@@ -113,7 +113,7 @@ fragment IntraComponentDependencySpecificationInfo on IntraComponentDependencySp
 mutation createProject($input: CreateProjectInput!) {
     createProject(input: $input) {
         project {
-            id
+            ...ProjectInfo
         }
     }
 }

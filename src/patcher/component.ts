@@ -2,7 +2,6 @@ import { Client } from "../graphql/client";
 import { ComponentInfoFragment, UpdateComponentInput } from "../graphql/generated";
 import { Component } from "../model/component";
 import { patchInterface } from "./interface";
-import { patchIntraComponentDependencySpecification } from "./intraComponentDependencySpecification";
 import { patchList } from "./patchList";
 import { getTemplatedFields, updateTemplatedNode } from "./templatedNode";
 
@@ -59,7 +58,7 @@ export async function patchComponent(
             }
             newCurrent = current;
         }
-        patchList(
+        await patchList(
             client,
             {
                 componentVersionId: newCurrent.id,
@@ -71,20 +70,6 @@ export async function patchComponent(
             (node) => ({ id: node.visibleInterface!.id, current: node }),
             ([ref, expected]) => ({ additionalContext: { ref }, expected }),
             patchInterface
-        );
-        patchList(
-            client,
-            {
-                componentVersionId: newCurrent.id,
-                interfaceIdLookup: new Map(
-                    Object.entries(expected.interfaces).map(([ref, expected]) => [ref, expected.id!])
-                )
-            },
-            newCurrent.intraComponentDependencySpecifications.nodes,
-            expected.icds,
-            (node) => ({ id: node.id, current: node }),
-            (expected) => ({ expected, additionalContext: {} }),
-            patchIntraComponentDependencySpecification
         );
     } else if (current != undefined) {
         await client.removeComponentVersionFromProject({

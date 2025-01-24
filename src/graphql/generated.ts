@@ -6511,7 +6511,106 @@ export type CreateProjectMutationVariables = Exact<{
 
 export type CreateProjectMutation = {
     __typename?: "Mutation";
-    createProject: { __typename?: "CreateProjectPayload"; project: { __typename?: "Project"; id: string } };
+    createProject: {
+        __typename?: "CreateProjectPayload";
+        project: {
+            __typename?: "Project";
+            id: string;
+            name: string;
+            description: string;
+            components: {
+                __typename?: "ComponentVersionConnection";
+                nodes: Array<{
+                    __typename?: "ComponentVersion";
+                    id: string;
+                    version: string;
+                    component: {
+                        __typename?: "Component";
+                        id: string;
+                        name: string;
+                        description: string;
+                        template: { __typename?: "ComponentTemplate"; id: string };
+                        templatedFields: Array<{ __typename?: "JSONField"; name: string; value?: any | null }>;
+                    };
+                    outgoingRelations: {
+                        __typename?: "RelationConnection";
+                        nodes: Array<{
+                            __typename?: "Relation";
+                            id: string;
+                            template: { __typename?: "RelationTemplate"; id: string };
+                            templatedFields: Array<{ __typename?: "JSONField"; name: string; value?: any | null }>;
+                        }>;
+                    };
+                    interfaceDefinitions: {
+                        __typename?: "InterfaceDefinitionConnection";
+                        nodes: Array<{
+                            __typename?: "InterfaceDefinition";
+                            id: string;
+                            visibleInterface?: {
+                                __typename?: "Interface";
+                                id: string;
+                                outgoingRelations: {
+                                    __typename?: "RelationConnection";
+                                    nodes: Array<{
+                                        __typename?: "Relation";
+                                        id: string;
+                                        template: { __typename?: "RelationTemplate"; id: string };
+                                        templatedFields: Array<{
+                                            __typename?: "JSONField";
+                                            name: string;
+                                            value?: any | null;
+                                        }>;
+                                    }>;
+                                };
+                            } | null;
+                            interfaceSpecificationVersion: {
+                                __typename?: "InterfaceSpecificationVersion";
+                                id: string;
+                                version: string;
+                                interfaceSpecification: {
+                                    __typename?: "InterfaceSpecification";
+                                    id: string;
+                                    name: string;
+                                    description: string;
+                                    template: { __typename?: "InterfaceSpecificationTemplate"; id: string };
+                                    templatedFields: Array<{
+                                        __typename?: "JSONField";
+                                        name: string;
+                                        value?: any | null;
+                                    }>;
+                                };
+                            };
+                        }>;
+                    };
+                    intraComponentDependencySpecifications: {
+                        __typename?: "IntraComponentDependencySpecificationConnection";
+                        nodes: Array<{
+                            __typename?: "IntraComponentDependencySpecification";
+                            id: string;
+                            name: string;
+                            description: string;
+                            incomingParticipants: {
+                                __typename?: "IntraComponentDependencyParticipantConnection";
+                                nodes: Array<{
+                                    __typename?: "IntraComponentDependencyParticipant";
+                                    id: string;
+                                    interface: { __typename?: "Interface"; id: string };
+                                }>;
+                            };
+                            outgoingParticipants: {
+                                __typename?: "IntraComponentDependencyParticipantConnection";
+                                nodes: Array<{
+                                    __typename?: "IntraComponentDependencyParticipant";
+                                    id: string;
+                                    interface: { __typename?: "Interface"; id: string };
+                                }>;
+                            };
+                        }>;
+                    };
+                }>;
+            };
+        };
+    };
 };
 
 export type UpdateProjectMutationVariables = Exact<{
@@ -6933,10 +7032,11 @@ export const CreateProjectDocument = gql`
     mutation createProject($input: CreateProjectInput!) {
         createProject(input: $input) {
             project {
-                id
+                ...ProjectInfo
             }
         }
     }
+    ${ProjectInfoFragmentDoc}
 `;
 export const UpdateProjectDocument = gql`
     mutation updateProject($input: UpdateProjectInput!) {
