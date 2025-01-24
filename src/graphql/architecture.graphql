@@ -1,0 +1,246 @@
+query getProject($id: ID!) {
+    node(id: $id) {
+        ... on Project {
+            ...ProjectInfo
+        }
+    }
+}
+
+fragment ProjectInfo on Project {
+    id
+    name
+    description
+    components {
+        nodes {
+            ...ComponentInfo
+        }
+    }
+}
+
+fragment ComponentInfo on ComponentVersion {
+    id
+    version
+    component {
+        id
+        name
+        description
+        templatedFields {
+            name
+            value
+        }
+    }
+    outgoingRelations {
+        nodes {
+            ...RelationInfo
+        }
+    }
+    interfaceDefinitions {
+        nodes {
+            ...InterfaceInfo
+        }
+    }
+    intraComponentDependencySpecifications {
+        nodes {
+            ...IntraComponentDependencySpecificationInfo
+        }
+    }
+}
+
+fragment InterfaceInfo on InterfaceDefinition {
+    id
+    visibleInterface {
+        id
+        outgoingRelations {
+            nodes {
+                ...RelationInfo
+            }
+        }
+    }
+    interfaceSpecificationVersion {
+        id
+        version
+        interfaceSpecification {
+            id
+            name
+            description
+            template {
+                id
+            }
+            templatedFields {
+                name
+                value
+            }
+        }
+    }
+}
+
+fragment RelationInfo on Relation {
+    id
+    template {
+        id
+    }
+    templatedFields {
+        name
+        value
+    }
+}
+
+fragment IntraComponentDependencySpecificationInfo on IntraComponentDependencySpecification {
+    id
+    incomingParticipants {
+        nodes {
+            interface {
+                id
+            }
+        }
+    }
+    outgoingParticipants {
+        nodes {
+            interface {
+                id
+            }
+        }
+    }
+}
+
+mutation createProject($input: CreateProjectInput!) {
+    createProject(input: $input) {
+        project {
+            id
+        }
+    }
+}
+
+mutation updateProject($input: UpdateProjectInput!) {
+    updateProject(input: $input) {
+        project {
+            id
+        }
+    }
+}
+
+mutation createComponent($input: CreateComponentInput!) {
+    createComponent(input: $input) {
+        component {
+            id
+        }
+    }
+}
+
+mutation updateComponent($input: UpdateComponentInput!) {
+    updateComponent(input: $input) {
+        component {
+            id
+        }
+    }
+}
+
+mutation updateComponentVersion($input: UpdateComponentVersionInput!) {
+    updateComponentVersion(input: $input) {
+        componentVersion {
+            id
+        }
+    }
+}
+
+mutation createInterfaceSpecification($input: CreateInterfaceSpecificationInput!) {
+    createInterfaceSpecification(input: $input) {
+        interfaceSpecification {
+            id
+        }
+    }
+}
+
+mutation updateInterfaceSpecificationVersion($input: UpdateInterfaceSpecificationVersionInput!) {
+    updateInterfaceSpecificationVersion(input: $input) {
+        interfaceSpecificationVersion {
+            id
+        }
+    }
+}
+
+mutation createRelation($input: CreateRelationInput!) {
+    createRelation(input: $input) {
+        relation {
+            id
+        }
+    }
+}
+
+mutation updateRelation($input: UpdateRelationInput!) {
+    updateRelation(input: $input) {
+        relation {
+            id
+        }
+    }
+}
+
+mutation createIntraComponentDependencySpecification($input: CreateIntraComponentDependencySpecificationInput!) {
+    createIntraComponentDependencySpecification(input: $input) {
+        intraComponentDependencySpecification {
+            id
+        }
+    }
+}
+
+mutation updateIntraComponentDependencySpecification($input: UpdateIntraComponentDependencySpecificationInput!) {
+    updateIntraComponentDependencySpecification(input: $input) {
+        intraComponentDependencySpecification {
+            id
+        }
+    }
+}
+
+mutation addInterfaceSpecificationVersionToComponentVersion(
+    $input: AddInterfaceSpecificationVersionToComponentVersionInput!
+) {
+    addInterfaceSpecificationVersionToComponentVersion(input: $input) {
+        componentVersion {
+            id
+        }
+    }
+}
+
+mutation removeInterfaceSpecificationVersionFromComponentVersion(
+    $input: RemoveInterfaceSpecificationVersionFromComponentVersionInput!
+) {
+    removeInterfaceSpecificationVersionFromComponentVersion(input: $input) {
+        componentVersion {
+            id
+        }
+    }
+}
+
+mutation deleteIntraComponentDependencySpecification($id: ID!) {
+    deleteIntraComponentDependencySpecification(input: { id: $id }) {
+        __typename
+    }
+}
+
+mutation deleteInterfaceSpecification($id: ID!) {
+    deleteInterfaceSpecification(input: { id: $id }) {
+        __typename
+    }
+}
+
+mutation deleteRelation($id: ID!) {
+    deleteRelation(input: { id: $id }) {
+        __typename
+    }
+}
+
+mutation addComponentVersionToProject($input: AddComponentVersionToProjectInput!) {
+    addComponentVersionToProject(input: $input) {
+        project {
+            id
+        }
+    }
+}
+
+mutation removeComponentVersionFromProject($input: RemoveComponentVersionFromProjectInput!) {
+    removeComponentVersionFromProject(input: $input) {
+        project {
+            id
+        }
+    }
+}
