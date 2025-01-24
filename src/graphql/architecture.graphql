@@ -24,6 +24,9 @@ fragment ComponentInfo on ComponentVersion {
         id
         name
         description
+        template {
+            id
+        }
         templatedFields {
             name
             value
@@ -87,8 +90,11 @@ fragment RelationInfo on Relation {
 
 fragment IntraComponentDependencySpecificationInfo on IntraComponentDependencySpecification {
     id
+    name
+    description
     incomingParticipants {
         nodes {
+            id
             interface {
                 id
             }
@@ -96,6 +102,7 @@ fragment IntraComponentDependencySpecificationInfo on IntraComponentDependencySp
     }
     outgoingParticipants {
         nodes {
+            id
             interface {
                 id
             }
@@ -123,6 +130,11 @@ mutation createComponent($input: CreateComponentInput!) {
     createComponent(input: $input) {
         component {
             id
+            versions {
+                nodes {
+                    ...ComponentInfo
+                }
+            }
         }
     }
 }
@@ -145,6 +157,19 @@ mutation updateComponentVersion($input: UpdateComponentVersionInput!) {
 
 mutation createInterfaceSpecification($input: CreateInterfaceSpecificationInput!) {
     createInterfaceSpecification(input: $input) {
+        interfaceSpecification {
+            id
+            versions {
+                nodes {
+                    id
+                }
+            }
+        }
+    }
+}
+
+mutation updateInterfaceSpecification($input: UpdateInterfaceSpecificationInput!) {
+    updateInterfaceSpecification(input: $input) {
         interfaceSpecification {
             id
         }
@@ -192,21 +217,25 @@ mutation updateIntraComponentDependencySpecification($input: UpdateIntraComponen
 }
 
 mutation addInterfaceSpecificationVersionToComponentVersion(
-    $input: AddInterfaceSpecificationVersionToComponentVersionInput!
+    $componentVersion: ID!
+    $interfaceSpecificationVersion: ID!
 ) {
-    addInterfaceSpecificationVersionToComponentVersion(input: $input) {
-        componentVersion {
-            id
+    addInterfaceSpecificationVersionToComponentVersion(
+        input: {
+            componentVersion: $componentVersion
+            interfaceSpecificationVersion: $interfaceSpecificationVersion
+            visible: true
+            invisible: false
         }
-    }
-}
-
-mutation removeInterfaceSpecificationVersionFromComponentVersion(
-    $input: RemoveInterfaceSpecificationVersionFromComponentVersionInput!
-) {
-    removeInterfaceSpecificationVersionFromComponentVersion(input: $input) {
+    ) {
         componentVersion {
-            id
+            interfaceDefinitions(filter: { interfaceSpecificationVersion: { id: { eq: $interfaceSpecificationVersion } } }) {
+                nodes {
+                    visibleInterface {
+                        id
+                    }
+                }
+            }
         }
     }
 }
