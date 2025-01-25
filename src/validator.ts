@@ -4,100 +4,94 @@ import { Model } from "./model/model";
 const ajv = new Ajv();
 
 const relationSchema = {
-    type: "object",
     properties: {
-        id: { type: "string", nullable: true },
         template: { type: "string" },
-        templatedFields: {
-            type: "object",
-            additionalProperties: { type: "string" },
-            nullable: true
-        },
         to: { type: "string" }
     },
-    required: ["template", "to"],
-    additionalProperties: false
+    optionalProperties: {
+        id: { type: "string", nullable: true },
+        templatedFields: {
+            values: {},
+            nullable: true
+        }
+    }
 };
 
 const relationPartnerProperties = {
+    template: { type: "string" }
+};
+
+const relationPartnerOptionalProperties = {
     id: { type: "string", nullable: true },
-    template: { type: "string" },
     templatedFields: {
-        type: "object",
-        additionalProperties: { type: "string" },
+        values: {},
         nullable: true
     },
     name: { type: "string", nullable: true },
     description: { type: "string", nullable: true },
     version: { type: "string", nullable: true },
     relations: {
-        type: "array",
-        items: relationSchema,
+        elements: relationSchema,
         nullable: true
     }
 };
 
 const interfaceSchema = {
-    type: "object",
     properties: {
         ...relationPartnerProperties
     },
-    required: ["template"],
-    additionalProperties: false
+    optionalProperties: {
+        ...relationPartnerOptionalProperties
+    }
 };
 
 const intraComponentDependencySpecificationSchema = {
-    type: "object",
     properties: {
-        name: { type: "string", nullable: true },
-        description: { type: "string", nullable: true },
         outgoing: {
-            type: "array",
-            items: { type: "string" }
+            elements: { type: "string" }
         },
         incoming: {
-            type: "array",
-            items: { type: "string" }
+            elements: { type: "string" }
         }
     },
-    required: ["outgoing", "incoming"],
-    additionalProperties: false
+    optionalProperties: {
+        id: { type: "string", nullable: true },
+        name: { type: "string", nullable: true },
+        description: { type: "string", nullable: true }
+    }
 };
 
 const componentSchema = {
-    type: "object",
     properties: {
-        ...relationPartnerProperties,
+        ...relationPartnerProperties
+    },
+    optionalProperties: {
+        ...relationPartnerOptionalProperties,
         interfaces: {
-            type: "object",
-            additionalProperties: interfaceSchema
+            values: interfaceSchema,
+            nullable: true
         },
         icds: {
-            type: "array",
-            items: intraComponentDependencySpecificationSchema
+            elements: intraComponentDependencySpecificationSchema,
+            nullable: true
         }
-    },
-    required: ["interfaces", "icds"],
-    additionalProperties: false
+    }
 };
 
 const modelSchema = {
-    type: "object",
     properties: {
         ref: {
-            type: "object",
-            additionalProperties: { type: "string" }
+            values: { type: "string" }
         },
         components: {
-            type: "object",
-            additionalProperties: componentSchema
+            values: componentSchema
         },
-        name: { type: "string" },
+        name: { type: "string" }
+    },
+    optionalProperties: {
         description: { type: "string", nullable: true },
         id: { type: "string", nullable: true }
-    },
-    required: ["ref", "components", "name"],
-    additionalProperties: false
+    }
 };
 
 export const validateModel = ajv.compile<Model>(modelSchema);

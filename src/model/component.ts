@@ -3,6 +3,6 @@ import { IntraComponentDependencySpecification } from "./intraComponentDependenc
 import { RelationPartner } from "./relationPartner";
 
 export interface Component extends RelationPartner {
-    interfaces: Record<string, Interface>;
-    icds: IntraComponentDependencySpecification[];
+    interfaces?: Record<string, Interface>;
+    icds?: IntraComponentDependencySpecification[];
 }

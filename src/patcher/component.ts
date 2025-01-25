@@ -2,7 +2,7 @@ import { Client } from "../graphql/client";
 import { ComponentInfoFragment, UpdateComponentInput } from "../graphql/generated";
 import { Component } from "../model/component";
 import { patchInterface } from "./interface";
-import { patchList } from "./patchList";
+import { getIdOrFail, patchList } from "./util";
 import { getTemplatedFields, updateTemplatedNode } from "./templatedNode";
 
 export async function patchComponent(
@@ -13,13 +13,13 @@ export async function patchComponent(
 ) {
     if (expected != undefined) {
         let newCurrent: ComponentInfoFragment;
-        const newName = expected.name ?? context.ref ?? "";
+        const newName = (expected.name ?? context.ref) || "Component";
         const newDescription = expected.description ?? "";
-        const newVersion = expected.version ?? "";
+        const newVersion = expected.version ?? "1.0.0";
         if (current == undefined) {
             const res = await client.createComponent({
                 input: {
-                    template: context.templateIdLookup.get(expected.template)!,
+                    template: getIdOrFail(expected.template, context.templateIdLookup),
                     templatedFields: getTemplatedFields(expected),
                     name: newName,
                     description: newDescription,
@@ -34,6 +34,12 @@ export async function patchComponent(
             });
             newCurrent = res.createComponent.component.versions.nodes[0];
             expected.id = newCurrent.id;
+            await client.addComponentVersionToProject({
+                input: {
+                    componentVersion: newCurrent.id,
+                    project: context.projectId
+                }
+            });
         } else {
             if (newVersion != current.version) {
                 await client.updateComponentVersion({
@@ -45,7 +51,7 @@ export async function patchComponent(
             }
             const update: UpdateComponentInput = {
                 id: current.component.id,
-                ...updateTemplatedNode(current.component, expected)
+                ...updateTemplatedNode(current.component, expected, context.templateIdLookup)
             };
             if (current.component.name != newName) {
                 update.name = newName;
@@ -66,7 +72,7 @@ export async function patchComponent(
                 templateIdLookup: context.templateIdLookup
             },
             newCurrent.interfaceDefinitions.nodes,
-            Object.entries(expected.interfaces),
+            Object.entries(expected.interfaces ?? {}),
             (node) => ({ id: node.visibleInterface!.id, current: node }),
             ([ref, expected]) => ({ additionalContext: { ref }, expected }),
             patchInterface

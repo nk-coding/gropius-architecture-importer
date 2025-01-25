@@ -2,6 +2,7 @@ import { Client } from "../graphql/client";
 import { RelationInfoFragment, UpdateRelationInput } from "../graphql/generated";
 import { Relation } from "../model/relation";
 import { getTemplatedFields, updateTemplatedNode } from "./templatedNode";
+import { getIdOrFail } from "./util";
 
 export async function patchRelation(
     client: Client,
@@ -17,17 +18,17 @@ export async function patchRelation(
         if (current == undefined) {
             const res = await client.createRelation({
                 input: {
-                    template: context.templateIdLookup.get(expected.template)!,
+                    template: getIdOrFail(expected.template, context.templateIdLookup),
                     templatedFields: getTemplatedFields(expected),
                     start: context.relationPartnerId,
-                    end: context.relationPartnerIdLookup.get(expected.to)!
+                    end: getIdOrFail(expected.to, context.relationPartnerIdLookup)
                 }
             });
             expected.id = res.createRelation.relation.id;
         } else {
             const update: UpdateRelationInput = {
                 id: current.id,
-                ...updateTemplatedNode(current, expected)
+                ...updateTemplatedNode(current, expected, context.templateIdLookup)
             };
             if (Object.keys(update).length > 1) {
                 await client.updateRelation({ input: update });

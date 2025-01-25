@@ -29,3 +29,11 @@ export async function patchList<C, A, B, C2, A2, B2 extends { id?: string }>(
         await patch(client, { ...context, ...entry.additionalContext }, undefined, entry.expected);
     }
 }
+
+export function getIdOrFail(ref: string, lookup: Map<string, string>) {
+    const id = lookup.get(ref);
+    if (id == undefined) {
+        throw new Error(`Unknown ref: ${ref}`);
+    }
+    return id;
+}

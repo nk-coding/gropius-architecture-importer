@@ -4,6 +4,7 @@ import {
     UpdateIntraComponentDependencySpecificationInput
 } from "../graphql/generated";
 import { IntraComponentDependencySpecification } from "../model/intraComponentDependencySpecification";
+import { getIdOrFail } from "./util";
 
 export async function patchIntraComponentDependencySpecification(
     client: Client,
@@ -12,10 +13,10 @@ export async function patchIntraComponentDependencySpecification(
     expected?: IntraComponentDependencySpecification
 ) {
     if (expected != undefined) {
-        const newName = expected.name ?? "";
+        const newName = expected.name || "ICDS";
         const newDescription = expected.description ?? "";
-        const newOutgoing = new Set(expected.outgoing.map((p) => context.interfaceIdLookup.get(p)!));
-        const newIncoming = new Set(expected.incoming.map((p) => context.interfaceIdLookup.get(p)!));
+        const newOutgoing = new Set(expected.outgoing.map((p) => getIdOrFail(p, context.interfaceIdLookup)));
+        const newIncoming = new Set(expected.incoming.map((p) => getIdOrFail(p, context.interfaceIdLookup)));
         if (current == undefined) {
             const res = await client.createIntraComponentDependencySpecification({
                 input: {

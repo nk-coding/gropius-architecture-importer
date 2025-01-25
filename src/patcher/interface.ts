@@ -2,6 +2,7 @@ import { Client } from "../graphql/client";
 import { InterfaceInfoFragment, UpdateInterfaceSpecificationInput } from "../graphql/generated";
 import { Interface } from "../model/interface";
 import { getTemplatedFields, updateTemplatedNode } from "./templatedNode";
+import { getIdOrFail } from "./util";
 
 export async function patchInterface(
     client: Client,
@@ -10,9 +11,9 @@ export async function patchInterface(
     expected?: Interface
 ) {
     if (expected != undefined) {
-        const newName = expected.name ?? context.ref ?? "";
+        const newName = (expected.name ?? context.ref) || "Interface";
         const newDescription = expected.description ?? "";
-        const newVersion = expected.version ?? "";
+        const newVersion = expected.version ?? "1.0.0";
         if (current == undefined) {
             const result = await client.createInterfaceSpecification({
                 input: {
@@ -25,7 +26,7 @@ export async function patchInterface(
                             tags: []
                         }
                     ],
-                    template: context.templateIdLookup.get(expected.template)!,
+                    template: getIdOrFail(expected.template, context.templateIdLookup),
                     templatedFields: getTemplatedFields(expected),
                     component: context.componentId
                 }
@@ -48,7 +49,11 @@ export async function patchInterface(
             }
             const update: UpdateInterfaceSpecificationInput = {
                 id: current.interfaceSpecificationVersion.interfaceSpecification.id,
-                ...updateTemplatedNode(current.interfaceSpecificationVersion.interfaceSpecification, expected)
+                ...updateTemplatedNode(
+                    current.interfaceSpecificationVersion.interfaceSpecification,
+                    expected,
+                    context.templateIdLookup
+                )
             };
             if (current.interfaceSpecificationVersion.interfaceSpecification.name != newName) {
                 update.name = newName;
