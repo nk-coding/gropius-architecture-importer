@@ -95,7 +95,8 @@ export async function patchProject(client: Client, expected: Model) {
                 componentVersionId: component.id!,
                 interfaceIdLookup: new Map(
                     Object.entries(component.interfaces ?? {}).map(([ref, expected]) => [ref, expected.id!])
-                )
+                ),
+                templateIdLookup
             },
             current.intraComponentDependencySpecifications.nodes,
             component.icds ?? [],

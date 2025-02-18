@@ -92,6 +92,9 @@ fragment IntraComponentDependencySpecificationInfo on IntraComponentDependencySp
     id
     name
     description
+    type {
+        id
+    }
     incomingParticipants {
         nodes {
             id

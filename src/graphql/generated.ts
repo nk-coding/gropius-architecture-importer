@@ -1339,6 +1339,8 @@ export type ComponentTemplateFilterInput = {
     extends?: InputMaybe<ComponentTemplateListFilterInput>;
     /** Filter by id */
     id?: InputMaybe<IdFilterInput>;
+    /** Filter by intraComponentDependencySpecificationTypes */
+    intraComponentDependencySpecificationTypes?: InputMaybe<IntraComponentDependencySpecificationTypeListFilterInput>;
     /** Filter by isDeprecated */
     isDeprecated?: InputMaybe<BooleanFilterInput>;
     /** Filter by name */
@@ -1565,6 +1567,8 @@ export type CreateComponentTemplateInput = {
     extends?: InputMaybe<Array<Scalars["ID"]["input"]>>;
     /** Style of the fill */
     fill?: InputMaybe<FillStyleInput>;
+    /** Set of all types IntraComponentDependencySpecifications of Components with the created Template can have */
+    intraComponentDependencySpecificationTypes: Array<IntraComponentDependencySpecificationTypeInput>;
     /** The name of the NamedNode, must not be blank */
     name: Scalars["String"]["input"];
     /** The corner radius of the shape, ignored for circle/ellipse */
@@ -1735,6 +1739,8 @@ export type CreateIntraComponentDependencySpecificationInput = {
     name: Scalars["String"]["input"];
     /** Initial outgoingParticipants, must not be empty */
     outgoingParticipants: Array<IntraComponentDependencyParticipantInput>;
+    /** The id of the type of the created IntraComponentDependencySpecification, must be compatible with the template of the Component */
+    type?: InputMaybe<Scalars["ID"]["input"]>;
 };
 
 /** Input for the createIssueComment mutation */
@@ -1779,13 +1785,13 @@ export type CreateIssueRelationInput = {
 
 /** Input for the createIssueTemplate mutation. */
 export type CreateIssueTemplateInput = {
-    /** Set of all types Assignments to Issues with the created can have. */
+    /** Set of all types Assignments to Issues with the created Template can have. */
     assignmentTypes: Array<AssignmentTypeInput>;
     /** The description of the NamedNode */
     description: Scalars["String"]["input"];
     /** IDs of Templates the created template extends. Must be templates of the same type. */
     extends?: InputMaybe<Array<Scalars["ID"]["input"]>>;
-    /** Set of all priorities Issues with the created can have. */
+    /** Set of all priorities Issues with the created Template can have. */
     issuePriorities: Array<IssuePriorityInput>;
     /** Set of all states Issues with the created Template can have */
     issueStates: Array<IssueStateInput>;
@@ -1793,7 +1799,7 @@ export type CreateIssueTemplateInput = {
     issueTypes: Array<IssueTypeInput>;
     /** The name of the NamedNode, must not be blank */
     name: Scalars["String"]["input"];
-    /** Set of all types outgoing IssueRelations of Issues with the created can have */
+    /** Set of all types outgoing IssueRelations of Issues with the created Template can have */
     relationTypes: Array<IssueRelationTypeInput>;
     /**
      * Additional initial templateFieldSpecifications, should be a JSON schema JSON.
@@ -3026,6 +3032,8 @@ export type IntraComponentDependencySpecificationFilterInput = {
     or?: InputMaybe<Array<IntraComponentDependencySpecificationFilterInput>>;
     /** Filter by outgoingParticipants */
     outgoingParticipants?: InputMaybe<IntraComponentDependencyParticipantListFilterInput>;
+    /** Filters for nodes where the related node match this filter */
+    type?: InputMaybe<IntraComponentDependencySpecificationTypeFilterInput>;
 };
 
 /** Used to filter by a connection-based property. Fields are joined by AND */
@@ -3048,6 +3056,64 @@ export type IntraComponentDependencySpecificationOrder = {
 
 /** Fields a list of IntraComponentDependencySpecification can be sorted by */
 export enum IntraComponentDependencySpecificationOrderField {
+    /** Order by id */
+    Id = "ID",
+    /** Order by name */
+    Name = "NAME",
+    /** Order by type_id */
+    TypeId = "TYPE_ID",
+    /** Order by type_name */
+    TypeName = "TYPE_NAME"
+}
+
+/** Filter used to filter IntraComponentDependencySpecificationType */
+export type IntraComponentDependencySpecificationTypeFilterInput = {
+    /** Connects all subformulas via and */
+    and?: InputMaybe<Array<IntraComponentDependencySpecificationTypeFilterInput>>;
+    /** Filter by description */
+    description?: InputMaybe<StringFilterInput>;
+    /** Filter by id */
+    id?: InputMaybe<IdFilterInput>;
+    /** Filter by intraComponentDependencySpecificationsWithType */
+    intraComponentDependencySpecificationsWithType?: InputMaybe<IssueListFilterInput>;
+    /** Filter by name */
+    name?: InputMaybe<StringFilterInput>;
+    /** Negates the subformula */
+    not?: InputMaybe<IntraComponentDependencySpecificationTypeFilterInput>;
+    /** Connects all subformulas via or */
+    or?: InputMaybe<Array<IntraComponentDependencySpecificationTypeFilterInput>>;
+    /** Filter by partOf */
+    partOf?: InputMaybe<ComponentTemplateListFilterInput>;
+};
+
+/** Input to create an IntraComponentDependencySpecificationType */
+export type IntraComponentDependencySpecificationTypeInput = {
+    /** The description of the NamedNode */
+    description: Scalars["String"]["input"];
+    /** The name of the NamedNode, must not be blank */
+    name: Scalars["String"]["input"];
+};
+
+/** Used to filter by a connection-based property. Fields are joined by AND */
+export type IntraComponentDependencySpecificationTypeListFilterInput = {
+    /** Filters for nodes where all of the related nodes match this filter */
+    all?: InputMaybe<IntraComponentDependencySpecificationTypeFilterInput>;
+    /** Filters for nodes where any of the related nodes match this filter */
+    any?: InputMaybe<IntraComponentDependencySpecificationTypeFilterInput>;
+    /** Filters for nodes where none of the related nodes match this filter */
+    none?: InputMaybe<IntraComponentDependencySpecificationTypeFilterInput>;
+};
+
+/** Defines the order of a IntraComponentDependencySpecificationType list */
+export type IntraComponentDependencySpecificationTypeOrder = {
+    /** The direction to order by, defaults to ASC */
+    direction?: InputMaybe<OrderDirection>;
+    /** The field to order by, defaults to ID */
+    field?: InputMaybe<IntraComponentDependencySpecificationTypeOrderField>;
+};
+
+/** Fields a list of IntraComponentDependencySpecificationType can be sorted by */
+export enum IntraComponentDependencySpecificationTypeOrderField {
     /** Order by id */
     Id = "ID",
     /** Order by name */
@@ -5623,6 +5689,8 @@ export type UpdateComponentInput = {
     description?: InputMaybe<Scalars["String"]["input"]>;
     /** The id of the node to update */
     id: Scalars["ID"]["input"];
+    /** Mapping to map existing IntraComponentDependencySpecificationTypes to new ones */
+    intraComponentDependencySpecificationTypeMapping?: InputMaybe<Array<TypeMappingInput>>;
     /** The new name of the NamedNode, must not be empty */
     name?: InputMaybe<Scalars["String"]["input"]>;
     /**
@@ -5836,6 +5904,8 @@ export type UpdateIntraComponentDependencySpecificationInput = {
     removedIncomingParticipants?: InputMaybe<Array<Scalars["ID"]["input"]>>;
     /** Ids of outgoingParticipants to remove / delete */
     removedOutgoingParticipants?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+    /** If provided, the new type of the IntraComponentDependencySpecification */
+    type?: InputMaybe<Scalars["ID"]["input"]>;
 };
 
 /** Input for the updateIssueComment mutation */
@@ -6139,6 +6209,7 @@ export type GetProjectQuery = {
         | { __typename?: "InterfaceSpecificationVersionTemplate" }
         | { __typename?: "IntraComponentDependencyParticipant" }
         | { __typename?: "IntraComponentDependencySpecification" }
+        | { __typename?: "IntraComponentDependencySpecificationType" }
         | { __typename?: "Issue" }
         | { __typename?: "IssueComment" }
         | { __typename?: "IssuePriority" }
@@ -6226,6 +6297,7 @@ export type GetProjectQuery = {
                               id: string;
                               name: string;
                               description: string;
+                              type?: { __typename?: "IntraComponentDependencySpecificationType"; id: string } | null;
                               incomingParticipants: {
                                   __typename?: "IntraComponentDependencyParticipantConnection";
                                   nodes: Array<{
@@ -6341,6 +6413,7 @@ export type ProjectInfoFragment = {
                     id: string;
                     name: string;
                     description: string;
+                    type?: { __typename?: "IntraComponentDependencySpecificationType"; id: string } | null;
                     incomingParticipants: {
                         __typename?: "IntraComponentDependencyParticipantConnection";
                         nodes: Array<{
@@ -6424,6 +6497,7 @@ export type ComponentInfoFragment = {
             id: string;
             name: string;
             description: string;
+            type?: { __typename?: "IntraComponentDependencySpecificationType"; id: string } | null;
             incomingParticipants: {
                 __typename?: "IntraComponentDependencyParticipantConnection";
                 nodes: Array<{
@@ -6487,6 +6561,7 @@ export type IntraComponentDependencySpecificationInfoFragment = {
     id: string;
     name: string;
     description: string;
+    type?: { __typename?: "IntraComponentDependencySpecificationType"; id: string } | null;
     incomingParticipants: {
         __typename?: "IntraComponentDependencyParticipantConnection";
         nodes: Array<{
@@ -6589,6 +6664,7 @@ export type CreateProjectMutation = {
                             id: string;
                             name: string;
                             description: string;
+                            type?: { __typename?: "IntraComponentDependencySpecificationType"; id: string } | null;
                             incomingParticipants: {
                                 __typename?: "IntraComponentDependencyParticipantConnection";
                                 nodes: Array<{
@@ -6704,6 +6780,7 @@ export type CreateComponentMutation = {
                             id: string;
                             name: string;
                             description: string;
+                            type?: { __typename?: "IntraComponentDependencySpecificationType"; id: string } | null;
                             incomingParticipants: {
                                 __typename?: "IntraComponentDependencyParticipantConnection";
                                 nodes: Array<{
@@ -6951,6 +7028,9 @@ export const IntraComponentDependencySpecificationInfoFragmentDoc = gql`
         id
         name
         description
+        type {
+            id
+        }
         incomingParticipants {
             nodes {
                 id

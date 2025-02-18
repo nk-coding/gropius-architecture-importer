@@ -8,7 +8,11 @@ import { getIdOrFail } from "./util";
 
 export async function patchIntraComponentDependencySpecification(
     client: Client,
-    context: { componentVersionId: string; interfaceIdLookup: Map<string, string> },
+    context: {
+        componentVersionId: string;
+        interfaceIdLookup: Map<string, string>;
+        templateIdLookup: Map<string, string>;
+    },
     current?: IntraComponentDependencySpecificationInfoFragment,
     expected?: IntraComponentDependencySpecification
 ) {
@@ -17,6 +21,7 @@ export async function patchIntraComponentDependencySpecification(
         const newDescription = expected.description ?? "";
         const newOutgoing = new Set(expected.outgoing.map((p) => getIdOrFail(p, context.interfaceIdLookup)));
         const newIncoming = new Set(expected.incoming.map((p) => getIdOrFail(p, context.interfaceIdLookup)));
+        const newType = expected.type != undefined ? getIdOrFail(expected.type, context.templateIdLookup) : null;
         if (current == undefined) {
             const res = await client.createIntraComponentDependencySpecification({
                 input: {
@@ -24,7 +29,8 @@ export async function patchIntraComponentDependencySpecification(
                     outgoingParticipants: [...newOutgoing].map((id) => ({ interface: id })),
                     incomingParticipants: [...newIncoming].map((id) => ({ interface: id })),
                     name: newName,
-                    description: newDescription
+                    description: newDescription,
+                    type: newType
                 }
             });
             expected.id = res.createIntraComponentDependencySpecification.intraComponentDependencySpecification.id;
@@ -37,6 +43,9 @@ export async function patchIntraComponentDependencySpecification(
             }
             if (current.description != newDescription) {
                 update.description = newDescription;
+            }
+            if (current.type?.id != newType) {
+                update.type = newType;
             }
             const removedOutgoing = current.outgoingParticipants.nodes.filter((p) => !newOutgoing.has(p.interface.id));
             if (removedOutgoing.length > 0) {

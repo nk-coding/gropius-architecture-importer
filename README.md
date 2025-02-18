@@ -12,7 +12,7 @@ Limitation: updating the target of a relation is currently not supported. In thi
 
 ## Example
 
-Note: template ids need to be entered manually
+Note: template/type ids need to be entered manually
 
 ```yaml
 name: ExampleProject
@@ -20,6 +20,7 @@ ref:
   Microservice: TODO
   REST: TODO
   Calls: TODO
+  ICDS_Calls: TODO
 components:
   HelloWorld:
     template: Microservice
@@ -29,7 +30,8 @@ components:
       REST2:
         template: REST
     icds:
-      - outgoing:
+      - type: ICDS_Calls
+        outgoing:
           - REST
         incoming:
           - REST2

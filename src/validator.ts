@@ -57,7 +57,8 @@ const intraComponentDependencySpecificationSchema = {
     optionalProperties: {
         id: { type: "string", nullable: true },
         name: { type: "string", nullable: true },
-        description: { type: "string", nullable: true }
+        description: { type: "string", nullable: true },
+        type: { type: "string", nullable: true }
     }
 };
 
